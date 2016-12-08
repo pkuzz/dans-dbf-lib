@@ -303,6 +303,24 @@ public class Table
     }
 
     /**
+     * Creates the table
+     *
+     * @throws IOException if the table does not exist or could be opened
+     */
+    public void create()
+                throws IOException
+    {
+        raFile = new RandomAccessFile(tableFile, "rw");
+
+        if (tableFile.exists())
+        {
+            raFile.setLength(0);
+        }
+
+        header.writeAll(raFile);
+    }
+
+    /**
      * Closes this table for reading and writing.
      *
      * @throws java.io.IOException if the table file or an associated file cannot be closed

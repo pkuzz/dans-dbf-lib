@@ -22,7 +22,7 @@
 	<groupId>dbf</groupId>
 	<artifactId>dans</artifactId>
 	<name>DANS DBF Library</name>
-	<version>1.0.0b12</version>
+	<version>1.0.0b13</version>
 	<url>http://dans-dbf-lib.sourceforge.net/</url>
 	<inceptionYear>2009-2016</inceptionYear>
 	<organization>
@@ -91,26 +91,6 @@
 			</plugin>
 
 			<!-- TODO: Needs to be factored out into a dans-proto-build project -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jalopy-maven-plugin</artifactId>
-				<version>1.0-alpha-1</version>
-				<executions>
-					<execution>
-						<!-- Do formatting after compilation, otherwise compilation will always 
-							be deemed necessary, as formatting changes the source files -->
-						<phase>package</phase>
-						<goals>
-							<goal>format</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<convention>src/config/jalopy.xml</convention>
-					<failOnError>false</failOnError>
-				</configuration>
-			</plugin>
-
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>

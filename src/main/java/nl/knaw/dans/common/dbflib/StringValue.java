@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2009-2016 DANS - Data Archiving and  Networked Services (info@dans.knaw.nl)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,11 +24,11 @@ import java.nio.charset.Charset;
  *
  * @author Jan van Mansum
  */
-public class StringValue
-    extends Value
-{
+public class StringValue extends Value {
+
     private final String charsetName;
-    static final int MAX_CHARFIELD_LENGTH_DBASE = 253;
+
+    private byte emptyByte = 0x00;
 
     /**
      * Creates a new StringValue object.
@@ -36,8 +36,7 @@ public class StringValue
      * @param stringValue aString
      * @param charsetName the character set to use when encoding and decoding this string value
      */
-    public StringValue(final String stringValue, final String charsetName)
-    {
+    public StringValue(final String stringValue, final String charsetName) {
         super(stringValue);
         this.charsetName = charsetName;
 
@@ -49,27 +48,27 @@ public class StringValue
      *
      * @param stringValue
      */
-    public StringValue(final String stringValue)
-    {
+    public StringValue(final String stringValue) {
         this(stringValue,
-             Charset.defaultCharset().name());
+                Charset.defaultCharset().name());
     }
 
-    StringValue(final Field field, final byte[] rawValue, final String charsetName)
-    {
+    StringValue(final Field field, final byte[] rawValue, final String charsetName) {
         super(field, rawValue);
         this.charsetName = charsetName == null ? Charset.defaultCharset().name() : charsetName;
     }
 
+    public StringValue withEmptyByte(byte emptyByte) {
+        this.emptyByte = emptyByte;
+        return this;
+    }
+
     @Override
-    protected Object doGetTypedValue(final byte[] rawValue)
-    {
+    protected Object doGetTypedValue(final byte[] rawValue) {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream(rawValue.length);
 
-        for (int i = 0; i < rawValue.length; ++i)
-        {
-            if (lookingAtSoftReturn(rawValue, i))
-            {
+        for (int i = 0; i < rawValue.length; ++i) {
+            if (lookingAtSoftReturn(rawValue, i)) {
                 ++i;
 
                 continue;
@@ -79,25 +78,22 @@ public class StringValue
         }
 
         return Util.createString(bos.toByteArray(),
-                                 charsetName);
+                charsetName);
     }
 
-    private static boolean lookingAtSoftReturn(final byte[] buffer, final int index)
-    {
+    private static boolean lookingAtSoftReturn(final byte[] buffer, final int index) {
         return index < buffer.length - 1 && buffer[index] == (byte) 0x8d && buffer[index + 1] == (byte) 0x0a;
     }
 
     @Override
     protected byte[] doGetRawValue(final Field field)
-                            throws ValueTooLargeException
-    {
+            throws ValueTooLargeException {
         final int fieldLength = field.getLength();
         final byte[] stringBytes = Util.getStringBytes((String) typed, charsetName);
 
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(fieldLength);
 
-        try
-        {
+        try {
             byteArrayOutputStream.write(stringBytes);
 
             /*
@@ -105,13 +101,10 @@ public class StringValue
              * zero's, as with the other fields. The maximum length of the memo field refers to the
              * DBT entry pointer length in the DBF.
              */
-            if (field.getType() != Type.MEMO)
-            {
-                byteArrayOutputStream.write(Util.repeat((byte) 0x00, fieldLength - stringBytes.length));
+            if (field.getType() != Type.MEMO) {
+                byteArrayOutputStream.write(Util.repeat(emptyByte, fieldLength - stringBytes.length));
             }
-        }
-        catch (final IOException ioException)
-        {
+        } catch (final IOException ioException) {
             assert false : "Writing to ByteArrayOutputStream should not cause an IOException";
 
             throw new RuntimeException(ioException);

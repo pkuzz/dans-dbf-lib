@@ -16,6 +16,7 @@
 package nl.knaw.dans.common.dbflib;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -266,6 +267,25 @@ public class Record
     public Date getDateValue(final String fieldName)
     {
         return (Date) getTypedValue(fieldName);
+    }
+
+    /**
+     * Returns the specified value as a {@link Value} object.
+     *
+     * @param fieldName the name of the field with date data
+     *
+     * @return a {@link Value} object
+     */
+    public Value getValue(final String fieldName) {
+        return valueMap.get(fieldName);
+    }
+
+    /**
+     * Returns copy of underlying values map
+     * @return copy of map
+     */
+    public Map<String, Value> getValueMapCopy() {
+        return new HashMap<String, Value>(valueMap);
     }
 
     /**

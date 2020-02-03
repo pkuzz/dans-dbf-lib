@@ -22,7 +22,7 @@
 	<groupId>dbf</groupId>
 	<artifactId>dans</artifactId>
 	<name>DANS DBF Library</name>
-	<version>1.0.0b11</version>
+	<version>1.0.0b12</version>
 	<url>http://dans-dbf-lib.sourceforge.net/</url>
 	<inceptionYear>2009-2016</inceptionYear>
 	<organization>
